@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <style>
+    textarea {width: 100%}
+  </style>
+</head>
+
+<div id=request>
+<b>Journals</b><br>
+<textarea id="journals" rows=10>
+Arthritis and Rheumatism
+Pathology
+</textarea><br>
+<b>Keywords</b><br>
+<textarea id="keywords" rows=10>
+racial
+socioeconomic
+ethnic
+</textarea><br>
+<button class="btn btn-primary" id=run>Run</button>
+<button class="btn btn-success" id=download>Download</button>
+</div>
+<div id=response></div>
+
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script>
+$('#run').click(function() {
+  $('#response').html('Querying...');
+  $.post('/run', {
+    journals: $('#journals').val(),
+    keywords: $('#keywords').val()
+  }, function(data) {
+    $('#response').html(data);
+  });
+});
+$('#download').click(function() {
+    window.location = '/results.zip';
+});
+$('#journals').focus();
+</script>
+</html>

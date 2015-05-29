@@ -1,0 +1,6 @@
+beautifulsoup4
+flask
+invisibleroads_macros
+numpy
+pandas
+requests

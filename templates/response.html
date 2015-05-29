@@ -1,0 +1,12 @@
+<table class="table">
+  <tr>
+    <th>Journal</th>
+    <th>Percent</th>
+  </tr>
+{% for journal, percent in journal_packs %}
+  <tr>
+    <td>{{ journal }}</td>
+    <td>{{ '%.2f' % percent }}%</td>
+  </tr>
+{% endfor %}
+</table>
