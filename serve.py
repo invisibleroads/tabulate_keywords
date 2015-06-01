@@ -47,7 +47,7 @@ def run():
         journal_total_counts.append(journal_result_count)
     log_file.close()
 
-    table = DataFrame(array, columns=['keywords'], index=journals)
+    table = DataFrame(array, columns=['||'.join(' %s ' % keyword for keyword in keywords)], index=journals)
     journal_selected_counts = table.sum(axis=1)
     journal_selected_percents = 100 * (
         journal_selected_counts / journal_total_counts)
