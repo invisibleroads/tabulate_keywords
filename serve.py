@@ -69,13 +69,13 @@ def download():
 
 
 def get_expression(journal, keyword, keywords):
-    positive_expression = '("%s"[Journal]) AND ("%s"[Text Word] OR "%s"[Text Word])' % (
-        journal, keyword, x for x in keywords)
-   # optional_keywords = list(keywords)
-   # optional_keywords.remove(keyword)
-    #optional_expression = ' '.join(
-   #         'OR "%s"[Text Word]' % x for x in optional_keywords)
-    return positive_expression #+ ' ' + optional_expression
+    positive_expression = '("%s"[Journal]) AND ("%s"[Text Word] ' % (
+        journal, keyword)
+    optional_keywords = list(keywords)
+    optional_keywords.remove(keyword)
+    optional_expression = ' '.join(
+            'OR "%s"[Text Word]' % x for x in optional_keywords)
+    return positive_expression + ' ' + optional_expression + ')'
 
 
 def get_result_count(expression):
