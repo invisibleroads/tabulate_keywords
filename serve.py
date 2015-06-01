@@ -1,7 +1,10 @@
 import numpy as np
+
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, render_template, request, send_from_directory
+
+
 from invisibleroads_macros import disk
 from os.path import join
 from pandas import DataFrame
@@ -20,6 +23,8 @@ def index():
 def run():
     journals = sorted(set(request.form['journals'].splitlines()))
     journal_count = len(journals)
+    #set journals in order, ensure only one instance of each journal
+
     keywords = sorted(set(request.form['keywords'].splitlines()))
     keyword_count = len(keywords)
     array = np.zeros((journal_count, keyword_count), dtype=np.uint64)
@@ -62,11 +67,11 @@ def download():
 def get_expression(journal, keyword, keywords):
     positive_expression = '(("%s"[Journal]) AND %s[Text Word])' % (
         journal, keyword)
-    negative_keywords = list(keywords)
-    negative_keywords.remove(keyword)
-    negative_expression = ' '.join(
-        'NOT "%s"[Text Word]' % x for x in negative_keywords)
-    return positive_expression + ' ' + negative_expression
+    optional_keywords = list(keywords)
+    optional_keywords.remove(keyword)
+    optional_expression = ' '.join(
+        'OR "%s"[Text Word]' % x for x in optional_keywords)
+    return positive_expression + ' ' + optional_expression
 
 
 def get_result_count(expression):
