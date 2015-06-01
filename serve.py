@@ -34,7 +34,7 @@ def run():
     log_file = open(log_path, 'wt')
     for journal_index, journal in enumerate(journals):
         #for keyword_index, keyword in enumerate(keywords):
-        expression = get_expression(journal, keyword, keywords)
+        expression = get_expression(journal, keywords[0], keywords)
         journal_keyword_result_count = get_result_count(expression)
         
         array[journal_index, 0] = journal_keyword_result_count
