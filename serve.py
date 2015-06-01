@@ -48,11 +48,9 @@ def run():
     log_file.close()
 
     table = DataFrame(array, columns=['||'.join(' %s ' % keyword for keyword in keywords)], index=journals)
-    journal_selected_counts = table.sum(axis=1)
     journal_selected_percents = 100 * (
         journal_selected_counts / journal_total_counts)
     table['journal_selected_percent'] = journal_selected_percents
-    table['journal_selected_count'] = journal_selected_counts
     table['journal_total_count'] = journal_total_counts
     table_path = join(results_folder, 'response.csv')
     table.to_csv(table_path)
