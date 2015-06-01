@@ -27,23 +27,27 @@ def run():
 
     keywords = sorted(set(request.form['keywords'].splitlines()))
     keyword_count = len(keywords)
-    array = np.zeros((journal_count, keyword_count), dtype=np.uint64)
+    array = np.zeros((journal_count, 1), dtype=np.uint64)
     journal_total_counts = []
 
     log_path = join(results_folder, 'log.txt')
     log_file = open(log_path, 'wt')
     for journal_index, journal in enumerate(journals):
-        for keyword_index, keyword in enumerate(keywords):
-            expression = get_expression(journal, keyword, keywords)
-            journal_keyword_result_count = get_result_count(expression)
-            array[journal_index, keyword_index] = journal_keyword_result_count
-            log_file.write(expression + '\n')
-            log_file.write(str(journal_keyword_result_count) + '\n\n')
+        #for keyword_index, keyword in enumerate(keywords):
+        expression = get_expression(journal, keyword, keywords)
+        journal_keyword_result_count = get_result_count(expression)
+        
+        array[journal_index, 0] = journal_keyword_result_count
+        
+        log_file.write(expression + '\n')
+        log_file.write(str(journal_keyword_result_count) + '\n\n')
+        
+        
         journal_result_count = get_result_count('"%s"[Journal]' % journal)
         journal_total_counts.append(journal_result_count)
     log_file.close()
 
-    table = DataFrame(array, columns=keywords, index=journals)
+    table = DataFrame(array, columns=['keywords'], index=journals)
     journal_selected_counts = table.sum(axis=1)
     journal_selected_percents = 100 * (
         journal_selected_counts / journal_total_counts)
