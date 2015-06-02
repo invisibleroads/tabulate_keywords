@@ -8,8 +8,13 @@
   <style>
     textarea {width: 100%}
   </style>
-</head>
+  
+  <!--- <title>jQuery UI Datepicker - Default functionality</title>-->
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+ 
 
+</head>
+<body>
 <div id=request>
 <b>Journals</b><br>
 <textarea id="journals" rows=10>
@@ -22,6 +27,10 @@ racial
 socioeconomic
 ethnic
 </textarea><br>
+
+<p>Date: <input type="text" id="datepicker"></p>
+
+
 <button class="btn btn-primary" id=run>Run</button>
 <button class="btn btn-success" id=download>Download</button>
 </div>
@@ -44,4 +53,16 @@ $('#download').click(function() {
 });
 $('#journals').focus();
 </script>
+
+
+
+ <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+ <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+ <script>
+  $(function() {
+    $( "#datepicker" ).datepicker();
+  });
+ </script>
+
+</body>
 </html>
