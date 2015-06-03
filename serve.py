@@ -29,7 +29,7 @@ def run():
     #keyword_count = len(keywords)
 
     
-    date_from = '1999/01/01'# set(request.form['from'].splitlines())[0]
+    date_from = '1999/01/01' #set(request.form['from'].splitlines())[0]
     date_to = '2013/12/31' #set(request.form['to'].splitlines())[0]
 
 
