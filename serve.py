@@ -27,6 +27,12 @@ def run():
 
     keywords = sorted(set(request.form['keywords'].splitlines()))
     #keyword_count = len(keywords)
+
+    
+    date_from = set(request.form['from'].splitlines())[0]
+    date_to = set(request.form['to'].splitlines())[0]
+
+
     array = np.zeros((journal_count, 1), dtype=np.uint64)
     journal_total_counts = []
 
@@ -34,7 +40,7 @@ def run():
     log_file = open(log_path, 'wt')
     for journal_index, journal in enumerate(journals):
         #for keyword_index, keyword in enumerate(keywords):
-        expression = get_expression(journal, keywords[0], keywords)
+        expression = get_expression(journal,date_from, date_to, keywords[0], keywords)
         journal_keyword_result_count = get_result_count(expression)
         
         array[journal_index, 0] = journal_keyword_result_count
@@ -66,15 +72,15 @@ def download():
     return send_from_directory('.', filename=archive_path)
 
 
-def get_expression(journal, keyword, keywords):
+def get_expression(journal,date_from, date_to, keyword, keywords):
     positive_expression = '("%s"[Journal]) AND ("%s"[Text Word] ' % (
         journal, keyword)
     optional_keywords = list(keywords)
     optional_keywords.remove(keyword)
     optional_expression = ' '.join(
             'OR "%s"[Text Word]' % x for x in optional_keywords)
-    return positive_expression + ' ' + optional_expression + ')'
-
+    dates = 'AND ("%S"[PDAT]: "%s"[PDAT])' % (date_from, date_to)
+    return positive_expression + ' ' + optional_expression + ') ' + dates
 
 def get_result_count(expression):
     url = 'http://www.ncbi.nlm.nih.gov/pubmed/'
