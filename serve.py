@@ -54,6 +54,7 @@ def run():
     log_file.close()
 
     table = DataFrame(array, columns=['||'.join(' %s ' % keyword for keyword in keywords)], index=journals)
+    journal_selected_counts = array
     journal_selected_percents = 100 * (
         journal_selected_counts / journal_total_counts)
     table['journal_selected_percent'] = journal_selected_percents
@@ -90,4 +91,4 @@ def get_result_count(expression):
 
 
 if __name__ == '__main__':
-    app.run(port=18927)
+    app.run(port=18927, debug=True)
