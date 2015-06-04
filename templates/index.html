@@ -28,8 +28,8 @@ socioeconomic
 ethnic
 </textarea><br>
 
-<p>from: <input type="text" value="1999/01/01" id ="from" class="datepicker"></p>
-<p>to: <input type="text" value="2013/12/31" id="to" class="datepicker"></p>
+<p>from: <input type="text" value="01/01/1999" id="from" class="datepicker"></p>
+<p>to: <input type="text" value="12/31/2013" id="to" class="datepicker"></p>
 
 
 
@@ -47,7 +47,9 @@ $('#run').click(function() {
   $('#response').html('Querying...');
   $.post('/run', {
     journals: $('#journals').val(),
-    keywords: $('#keywords').val()
+    keywords: $('#keywords').val(),
+    from: $('#from').val(),
+    to: $('#to').val()
   }, function(data) {
     $('#response').html(data);
   });

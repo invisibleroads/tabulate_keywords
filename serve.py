@@ -9,6 +9,7 @@ from invisibleroads_macros import disk
 from os.path import join
 from pandas import DataFrame
 
+from joblib import Parallel, delayed
 
 app = Flask(__name__)
 results_folder = disk.make_folder('results')
@@ -21,6 +22,7 @@ def index():
 
 @app.route('/run', methods=['GET', 'POST'])
 def run():
+    #os.fork()
     journals = sorted(set(request.form['journals'].splitlines()))
     journal_count = len(journals)
     #set journals in order, ensure only one instance of each journal
@@ -29,8 +31,12 @@ def run():
     #keyword_count = len(keywords)
 
     
-    date_from = '1999/01/01' #set(request.form['from'].splitlines())[0]
-    date_to = '2013/12/31' #set(request.form['to'].splitlines())[0]
+    date_from = sorted(set(request.form['from'].splitlines()))[0]
+    date_to =  sorted(set(request.form['to'].splitlines()))[0]
+
+    date_from = '%s/%s/%s' %(date_from[6:10], date_from[0:2], date_from[3:5])
+    date_to = '%s/%s/%s' %(date_to[6:10], date_to[0:2], date_to[3:5])
+
 
 
     array = np.zeros((journal_count, 1), dtype=np.uint64)
@@ -74,7 +80,7 @@ def download():
 
 
 def get_expression(journal, date_from, date_to, keywords):
-    positive_expression = '("%s"[Journal]) AND ("%s"[Text Word] ' % (
+    positive_expression = '"%s"[Journal] AND ("%s"[Text Word]' % (
         journal, keywords[0])
     optional_keywords = list(keywords)
     optional_keywords.remove(keywords[0])
