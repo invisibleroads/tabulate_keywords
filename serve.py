@@ -4,7 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 from flask import Flask, render_template, request, send_from_directory
 
-
 from invisibleroads_macros import disk
 from os.path import join
 from pandas import DataFrame
@@ -26,7 +25,11 @@ def run():
     journals = sorted(set(request.form['journals'].splitlines()))
     journal_count = len(journals)
     #set journals in order, ensure only one instance of each journal
-
+    
+    #key_val = sorted(set(request.form['key_val'].splitlines()))[0]
+    #temporary
+    key_val = 'Text Word'
+    
     keywords = sorted(set(request.form['keywords'].splitlines()))
     #keyword_count = len(keywords)
 
@@ -46,7 +49,7 @@ def run():
     log_file = open(log_path, 'wt')
     for journal_index, journal in enumerate(journals):
         #for keyword_index, keyword in enumerate(keywords):
-        expression = get_expression(journal,date_from, date_to, keywords)
+        expression = get_expression(journal,date_from, date_to, key_val, keywords)
         journal_keyword_result_count = get_result_count(expression)
         
         array[journal_index, 0] = journal_keyword_result_count
@@ -79,14 +82,17 @@ def download():
     return send_from_directory('.', filename=archive_path)
 
 
-def get_expression(journal, date_from, date_to, keywords):
-    positive_expression = '"%s"[Journal] AND ("%s"[Text Word]' % (
-        journal, keywords[0])
+def get_expression(journal, date_from, date_to, key_val, keywords):
+    positive_expression = '"%s"[Journal] AND ("%s"[%s]' % (
+        journal, keywords[0], key_val)
     optional_keywords = list(keywords)
     optional_keywords.remove(keywords[0])
-    optional_expression = ' '.join(
-            'OR "%s"[Text Word]' % x for x in optional_keywords)
-    dates = 'AND ("%s"[PDAT]: "%s"[PDAT])' % (date_from, date_to)
+
+    optional_expression = ''
+    for x in optional_keywords:
+        optional_expression += ' OR "%s"[%s]' %(x,key_val)
+
+    dates = ' AND ("%s"[PDAT]: "%s"[PDAT])' % (date_from, date_to)
     return positive_expression + ' ' + optional_expression + ') ' + dates
 
 def get_result_count(expression):

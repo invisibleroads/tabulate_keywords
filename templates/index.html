@@ -21,7 +21,16 @@
 Arthritis and Rheumatism
 Pathology
 </textarea><br>
+
+
 <b>Keywords</b><br>
+<select id="select" name="select">
+  <option id="mesh" value="mesh">MeSh Terms</option> 
+  <option id="text" value="text" selected>Text Word</option>
+</select><br>
+
+
+
 <textarea id="keywords" rows=10>
 racial
 socioeconomic
@@ -43,13 +52,26 @@ ethnic
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script>
+  var key
+  
+$('#mesh').click(function() {
+  key = 'Text Word' 
+});
+
+$('#text').click(function() {
+  key = 'MeSH Terms' 
+});
+
+
+
 $('#run').click(function() {
   $('#response').html('Querying...');
   $.post('/run', {
     journals: $('#journals').val(),
     keywords: $('#keywords').val(),
     from: $('#from').val(),
-    to: $('#to').val()
+    to: $('#to').val(),
+    key_val: $('#select').value
   }, function(data) {
     $('#response').html(data);
   });
