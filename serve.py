@@ -21,14 +21,13 @@ def index():
 
 @app.route('/run', methods=['GET', 'POST'])
 def run():
-    #os.fork()
     journals = sorted(set(request.form['journals'].splitlines()))
     journal_count = len(journals)
     #set journals in order, ensure only one instance of each journal
     
-    #key_val = sorted(set(request.form['key_val'].splitlines()))[0]
+    key_val = sorted(set(request.form['key_val'].splitlines()))[0]
     #temporary
-    key_val = 'Text Word'
+    #key_val = 'Text Word'
     
     keywords = sorted(set(request.form['keywords'].splitlines()))
     #keyword_count = len(keywords)
@@ -92,8 +91,8 @@ def get_expression(journal, date_from, date_to, key_val, keywords):
     for x in optional_keywords:
         optional_expression += ' OR "%s"[%s]' %(x,key_val)
 
-    dates = ' AND ("%s"[PDAT]: "%s"[PDAT])' % (date_from, date_to)
-    return positive_expression + ' ' + optional_expression + ') ' + dates
+    dates = 'AND ("%s"[PDAT]: "%s"[PDAT])' % (date_from, date_to)
+    return positive_expression + optional_expression + ') ' + dates
 
 def get_result_count(expression):
     url = 'http://www.ncbi.nlm.nih.gov/pubmed/'
