@@ -3,10 +3,14 @@
     <th>Journal</th>
     <th>Percent</th>
   </tr>
-{% for journal, percent in journal_packs %}
+{% for journal_name, search_fraction in search_fraction_by_journal_name.iteritems() %}
   <tr>
-    <td>{{ journal }}</td>
-    <td>{{ '%.2f' % percent }}%</td>
+    <td>{{ journal_name }}</td>
+    <td>{{ '%.2f' % (100 * search_fraction) }}%</td>
   </tr>
 {% endfor %}
 </table>
+
+<form action="/download/{{ archive_name }}">
+  <input type="submit" value="Download" class="btn btn-success">
+</form>

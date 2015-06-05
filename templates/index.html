@@ -11,41 +11,32 @@
   
   <!--- <title>jQuery UI Datepicker - Default functionality</title>-->
   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
- 
 
 </head>
 <body>
 <div id=request>
 <b>Journals</b><br>
-<textarea id="journals" rows=10>
+<textarea id="journal_names" rows=5>
 Arthritis and Rheumatism
 Pathology
 </textarea><br>
 
-
 <b>Keywords</b><br>
-<select id="select" name="select">
-  <option id="mesh" value="MeSH Terms">MeSH Terms</option> 
-  <option id="text" value="Text Word" selected>Text Word</option>
-</select><br>
-
-
-
-<textarea id="keywords" rows=10>
+<textarea id="text_terms" rows=5>
 racial
 socioeconomic
 ethnic
 </textarea><br>
 
-<p>from: <input type="text" value="01/01/1999" id="from" class="datepicker"></p>
-<p>to: <input type="text" value="12/31/2013" id="to" class="datepicker"></p>
+<b>MeSH terms</b><br>
+<textarea id="mesh_terms" rows=5>
+ethnic
+</textarea><br>
 
-
-
-
+<p>from: <input type="text" value="01/01/2000" id="from" class="datepicker"></p>
+<p>to: <input type="text" value="12/31/2010" id="to" class="datepicker"></p>
 
 <button class="btn btn-primary" id=run>Run</button>
-<button class="btn btn-success" id=download>Download</button>
 </div>
 <div id=response></div>
 
@@ -55,30 +46,17 @@ ethnic
 $('#run').click(function() {
   $('#response').html('Querying...');
   $.post('/run', {
-    journals: $('#journals').val(),
-    keywords: $('#keywords').val(),
-    from: $('#from').val(),
-    to: $('#to').val(),
-    key_val: $('#select').val()
+    journal_names: $('#journal_names').val(),
+    text_terms: $('#text_terms').val(),
+    mesh_terms: $('#mesh_terms').val()
+    // from: $('#from').val(),
+    // to: $('#to').val(),
+    // key_val: $('#select').val()
   }, function(data) {
     $('#response').html(data);
   });
 });
-$('#download').click(function() {
-    window.location = '/results.zip';
-});
 $('#journals').focus();
 </script>
-
-
-
- <script src="//code.jquery.com/jquery-1.10.2.js"></script>
- <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
- <script>
-  $(function() {
-    $( ".datepicker" ).datepicker();
-  });
- </script>
-
 </body>
 </html>
