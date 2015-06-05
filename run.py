@@ -37,7 +37,7 @@ def run(
         journal_selected_search_counts, journal_total_search_counts,
         journal_names)
     table_path = join(target_folder, 'search_counts.csv')
-    table.to_csv(table_path)
+    table.to_csv(table_path, index=False)
     print('log_path = %s' % log_path)
     print('table_path = %s' % table_path)
     return dict(
@@ -83,9 +83,9 @@ def log_search_count(log_file, expression, search_count):
 
 def get_table(selected_search_counts, total_search_counts, journal_names):
     table = DataFrame(dict(
+        journal_name=journal_names,
         selected_search_count=selected_search_counts,
-        total_search_count=total_search_counts,
-    ), index=journal_names)
+        total_search_count=total_search_counts))
     table['selected_search_fraction'] = (
         table['selected_search_count'] / table['total_search_count'])
     return table
