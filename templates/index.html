@@ -5,15 +5,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//eternicode.github.io/bootstrap-datepicker/bootstrap-datepicker/css/datepicker3.css">
   <style>
     textarea {width: 100%}
   </style>
-  
-  <!--- <title>jQuery UI Datepicker - Default functionality</title>-->
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-
 </head>
 <body>
+
 <div id=request>
 <b>Journals</b><br>
 <textarea id="journal_names" rows=5>
@@ -33,30 +31,34 @@ ethnic
 ethnic
 </textarea><br>
 
-<p>from: <input type="text" value="01/01/2000" id="from" class="datepicker"></p>
-<p>to: <input type="text" value="12/31/2010" id="to" class="datepicker"></p>
+<div class="input-daterange input-group">
+  <input class="form-control" type="text" data-provide="datepicker" value="01/01/2000" id="from_date" />
+  <span class="input-group-addon">to</span>
+  <input class="form-control" type="text" data-provide="datepicker" value="12/31/2010" id="to_date" />
+</div>
 
 <button class="btn btn-primary" id=run>Run</button>
 </div>
+
 <div id=response></div>
 
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="//eternicode.github.io/bootstrap-datepicker/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 <script>
 $('#run').click(function() {
   $('#response').html('Querying...');
   $.post('/run', {
     journal_names: $('#journal_names').val(),
     text_terms: $('#text_terms').val(),
-    mesh_terms: $('#mesh_terms').val()
-    // from: $('#from').val(),
-    // to: $('#to').val(),
-    // key_val: $('#select').val()
+    mesh_terms: $('#mesh_terms').val(),
+    from_date: $('#from_date').val(),
+    to_date: $('#from_date').val()
   }, function(data) {
     $('#response').html(data);
   });
 });
-$('#journals').focus();
+$('#journal_names').focus();
 </script>
 </body>
 </html>
