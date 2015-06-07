@@ -4,6 +4,7 @@ from invisibleroads_macros import disk, security
 from os.path import basename, join
 from tempfile import mkdtemp
 
+from run import parse_date
 from run import run as run_script
 
 
@@ -25,8 +26,11 @@ def run():
         request.form.get('text_terms', '').splitlines()))
     mesh_terms = sorted(set(
         request.form.get('mesh_terms', '').splitlines()))
-    from_date = None
-    to_date = None
+    try:
+        from_date = parse_date(request.form.get('from_date'))
+        to_date = parse_date(request.form.get('to_date'))
+    except (TypeError, ValueError):
+        from_date, to_date = None, None
     result_properties = run_script(
         target_folder, journal_names, text_terms, mesh_terms,
         from_date, to_date)
