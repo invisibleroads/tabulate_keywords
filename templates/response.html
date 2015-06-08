@@ -1,16 +1,13 @@
-<table class="table">
-  <tr>
-    <th>Journal</th>
-    <th>Percent</th>
-  </tr>
-{% for journal_name, search_fraction in search_fraction_by_journal_name.iteritems() %}
-  <tr>
-    <td>{{ journal_name }}</td>
-    <td>{{ '%.2f' % (100 * search_fraction) }}%</td>
-  </tr>
-{% endfor %}
-</table>
+<div>
+{% if result_properties['selected_search_count'] > 0 %}
+  <img id=image src="/download/{{ image_name }}">
+{% elif result_properties['total_search_count'] > 0 %}
+  There were no results for your query.
+{% else %}
+  There was an error processing your query; please try again.
+{% endif %}
+</div>
 
 <form action="/download/{{ archive_name }}">
-  <input type="submit" value="Download" class="btn btn-success" download>
+<input type="submit" value="Download" class="btn btn-success" download>
 </form>

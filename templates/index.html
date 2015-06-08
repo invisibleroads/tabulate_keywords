@@ -9,56 +9,144 @@
   <style>
     textarea {width: 100%}
   </style>
+  <title>Tabulate keyword frequency</title>
 </head>
 <body>
 
-<div id=request>
-<b>Journals</b><br>
-<textarea id="journal_names" rows=5>
-Arthritis and Rheumatism
-Pathology
-</textarea><br>
+<h1>Tabulate keyword frequency</h1>
+<p>Compare the number of articles that contain the specified keywords across journals in <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target=_blank>PubMed</a>.</p>
+<p>Thanks to 
+<a target=_blank href="https://github.com/salah93">Salah Ahmed</a> and
+<a target=_blank href="https://www.linkedin.com/in/awadaahmed">Awad Ahmed</a>.
+</p>
 
-<b>Keywords</b><br>
-<textarea id="text_terms" rows=5>
-racial
-socioeconomic
-ethnic
-</textarea><br>
+<form id=questions role=form>
 
-<b>MeSH terms</b><br>
-<textarea id="mesh_terms" rows=5>
-ethnic
-</textarea><br>
+  <div id=query_method_question class='form-group'>
+    <div class="btn-group" data-toggle="buttons">
+      <label id="query_method_guided" class="btn btn-default active"><input type="radio"> Guided query</label>
+      <label id="query_method_custom" class="btn btn-default"><input type="radio"> Custom query</label>
+    </div>
+  </div>
 
-<div class="input-daterange input-group">
-  <input class="form-control" type="text" data-provide="datepicker" value="01/01/2000" id="from_date" />
-  <span class="input-group-addon">to</span>
-  <input class="form-control" type="text" data-provide="datepicker" value="12/31/2010" id="to_date" />
+<div id=journal_names_question class='form-group'>
+<label for=journal_names class=control-label>Journals</label>
+<textarea id=journal_names class=form-control rows=3>
+Nature
+Science
+</textarea>
 </div>
 
-<button class="btn btn-primary" id=run>Run</button>
+<div id="guided_query" style="margin-top: 0">
+
+<div id=text_terms_question class='form-group'>
+<label for=text_terms class=control-label>Keywords</label>
+<textarea id=text_terms class=form-control rows=3>
+income
+poverty
+</textarea>
 </div>
 
-<div id=response></div>
+<div id=mesh_terms_question class='form-group'>
+<label for=mesh_terms class=control-label>
+<a href="http://www.ncbi.nlm.nih.gov/mesh" target="_blank">MeSH terms</a>
+</label>
+<textarea id=mesh_terms class=form-control rows=3>
+social class
+socioeconomic factors
+</textarea>
+</div>
+
+</div>
+
+<div id="custom_query" class="hidden" style="margin-top: 0">
+
+<div id=custom_expression_question class='form-group'>
+<label for=custom_expression class=control-label>Search expression</label>
+<textarea id=custom_expression class=form-control rows=7>
+"income"[Text Word] OR
+"poverty"[Text Word] OR
+"social class"[MeSH Terms] OR
+"socioeconomic factors"[MeSH Terms]
+</textarea>
+</div>
+
+</div>
+
+<div id=date_range_question class="input-daterange input-group form-group">
+<input class="form-control" type="text" data-provide="datepicker" value="01/01/2000" id="from_date" />
+<span class="input-group-addon">to</span>
+<input class="form-control" type="text" data-provide="datepicker" value="12/31/2010" id="to_date" />
+</div>
+
+<div id=date_interval_question class='form-group'>
+<label for=date_interval_in_years class=control-label>Date interval in years</label>
+<input class="form-control" id=date_interval_in_years value=2>
+</div>
+</form>
+
+<div>
+<button id=run type=button class='btn btn-primary'>Tabulate keywords</button>
+</div>
+
+<div id=results></div>
 
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script src="//eternicode.github.io/bootstrap-datepicker/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 <script>
-$('#run').click(function() {
-  $('#response').html('Querying...');
-  $.post('/run', {
-    journal_names: $('#journal_names').val(),
-    text_terms: $('#text_terms').val(),
-    mesh_terms: $('#mesh_terms').val(),
-    from_date: $('#from_date').val(),
-    to_date: $('#from_date').val()
-  }, function(data) {
-    $('#response').html(data);
-  });
+$('#query_method_guided').click(function() {
+  $('#custom_query').hide();
+  $('#guided_query').removeClass('hidden').show();
+  $('#text_terms').focus();
 });
-$('#journal_names').focus();
+
+$('#query_method_custom').click(function() {
+  $('#guided_query').hide();
+  $('#custom_query').removeClass('hidden').show();
+  $('#custom_expression').focus();
+});
+
+$('#run').click(function() {
+  $('#run').prop('disabled', true);
+  $('#results').html('Querying...');
+
+  if ($('#query_method_guided').hasClass('active')) {
+
+    $.post('/run', {
+      journal_names: $('#journal_names').val(),
+      text_terms: $('#text_terms').val(),
+      mesh_terms: $('#mesh_terms').val(),
+      from_date: $('#from_date').val(),
+      to_date: $('#to_date').val(),
+      date_interval_in_years: $('#date_interval_in_years').val()
+    }, function(data) {
+      $('#results').html(data);
+      $('#run').prop('disabled', false);
+      $('#image').load(function() {
+          window.scrollTo(0, document.body.scrollHeight);
+      });
+    });
+
+  } else {
+
+    $.post('/run', {
+      journal_names: $('#journal_names').val(),
+      custom_expression: $('#custom_expression').val(),
+      from_date: $('#from_date').val(),
+      to_date: $('#from_date').val(),
+      date_interval_in_years: $('#date_interval_in_years').val()
+    }, function(data) {
+      $('#results').html(data);
+      $('#run').prop('disabled', false);
+      $('#image').load(function() {
+          window.scrollTo(0, document.body.scrollHeight);
+      });
+    });
+
+  }
+});
+$('#text_terms').focus();
 </script>
 </body>
 </html>
