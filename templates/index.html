@@ -84,8 +84,8 @@ socioeconomic factors
 <div id="author_query" class="hidden" style="margin-top: 0">
 
 <div id=author_question class='form-group'>
-<label for=author_terms class=control-label>Authors</label>
-<textarea id=author_terms class=form-control rows=3>
+<label for=author_names class=control-label>Authors</label>
+<textarea id=author_names class=form-control rows=3>
 Weinberger AH
 </textarea>
 </div>
@@ -123,6 +123,7 @@ Weinberger AH
 
 <script>
 $('#query_method_guided').click(function() {
+  $('#date_interval_question').removeClass('hidden').show();
   $('#guided_custom_query').removeClass('hidden').show();
   $('#custom_query').hide();
   $('#author_query').hide();
@@ -131,6 +132,7 @@ $('#query_method_guided').click(function() {
 });
 
 $('#query_method_custom').click(function() {
+  $('#date_interval_question').removeClass('hidden').show();
   $('#guided_custom_query').removeClass('hidden').show();
   $('#guided_query').hide();
   $('#author_query').hide();
@@ -139,11 +141,12 @@ $('#query_method_custom').click(function() {
 });
 
 $('#query_method_author').click(function() {
+  $('#date_interval_question').hide();
   $('#guided_custom_query').hide();
   $('#guided_query').hide();
   $('#custom_query').hide();
   $('#author_query').removeClass('hidden').show();
-  $('#author_terms').focus();
+  $('#author_names').focus();
 });
 
 $('#run').click(function() {
@@ -156,7 +159,6 @@ $('#run').click(function() {
       journal_names: $('#journal_names').val(),
       text_terms: $('#text_terms').val(),
       mesh_terms: $('#mesh_terms').val(),
-      author_terms: $('#author_terms').val(),
       from_date: $('#from_date').val(),
       to_date: $('#to_date').val(),
       date_interval_in_years: $('#date_interval_in_years').val()
@@ -168,7 +170,20 @@ $('#run').click(function() {
       });
     });
 
-  } else {
+    } else if($('#query_method_author').hasClass('active')) {
+      $.post('/run', {
+        author_names: $('#author_names').val(),
+        from_date: $('#from_date').val(),
+        to_date: $('#to_date').val(),
+      }, function(data) {
+        $('#results').html(data);
+        $('#run').prop('disabled', false);
+        $('#image').load(function() {
+          window.scrollTo(0, document.body.scrollHeight);
+        });
+      }); 
+    
+    } else {
 
     $.post('/run', {
       journal_names: $('#journal_names').val(),

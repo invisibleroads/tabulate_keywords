@@ -23,6 +23,8 @@ def run():
     target_folder = mkdtemp()
     journal_names = sorted(set(
         request.form.get('journal_names', '').splitlines()))
+    author_names = sorted(set(
+        request.form.get('author_names', '').splitlines()))
     text_terms = sorted(set(
         request.form.get('text_terms', '').splitlines()))
     mesh_terms = sorted(set(
@@ -37,7 +39,7 @@ def run():
         request.form.get('date_interval_in_years'))
     result_properties = run_script(
         target_folder, journal_names, text_terms, mesh_terms,
-        custom_expression, from_date, to_date, date_interval_in_years)
+        custom_expression, author_names, from_date, to_date, date_interval_in_years)
 
     timestamp = datetime.datetime.now().strftime('%Y%m%d-%M%H')
     archive_nickname = '%s-%s' % (
