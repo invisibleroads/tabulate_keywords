@@ -10,6 +10,8 @@
     textarea {width: 100%}
   </style>
   <title>Tabulate keyword frequency</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css"/>
+
 </head>
 <body>
 
@@ -26,15 +28,21 @@
     <div class="btn-group" data-toggle="buttons">
       <label id="query_method_guided" class="btn btn-default active"><input type="radio"> Guided query</label>
       <label id="query_method_custom" class="btn btn-default"><input type="radio"> Custom query</label>
+      <label id="query_method_author" class="btn btn-default"><input type="radio">Author query</label>
+
     </div>
   </div>
 
+<div id="guided_custom_query" style="margin-top: 0">
+  
 <div id=journal_names_question class='form-group'>
 <label for=journal_names class=control-label>Journals</label>
 <textarea id=journal_names class=form-control rows=3>
 Nature
 Science
 </textarea>
+</div>
+
 </div>
 
 <div id="guided_query" style="margin-top: 0">
@@ -73,6 +81,17 @@ socioeconomic factors
 
 </div>
 
+<div id="author_query" class="hidden" style="margin-top: 0">
+
+<div id=author_question class='form-group'>
+<label for=author_terms class=control-label>Authors</label>
+<textarea id=author_terms class=form-control rows=3>
+Weinberger AH
+</textarea>
+</div>
+
+</div>
+
 <div id=date_range_question class="input-daterange input-group form-group">
 <input class="form-control" type="text" data-provide="datepicker" value="01/01/2000" id="from_date" />
 <span class="input-group-addon">to</span>
@@ -94,17 +113,37 @@ socioeconomic factors
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script src="//eternicode.github.io/bootstrap-datepicker/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+<script>
+  $(function(){
+// turn the element to select2 select style
+    $(#select2').select2();
+  });
+</script>
+
 <script>
 $('#query_method_guided').click(function() {
+  $('#guided_custom_query').removeClass('hidden').show();
   $('#custom_query').hide();
+  $('#author_query').hide();
   $('#guided_query').removeClass('hidden').show();
   $('#text_terms').focus();
 });
 
 $('#query_method_custom').click(function() {
+  $('#guided_custom_query').removeClass('hidden').show();
   $('#guided_query').hide();
+  $('#author_query').hide();
   $('#custom_query').removeClass('hidden').show();
   $('#custom_expression').focus();
+});
+
+$('#query_method_author').click(function() {
+  $('#guided_custom_query').hide();
+  $('#guided_query').hide();
+  $('#custom_query').hide();
+  $('#author_query').removeClass('hidden').show();
+  $('#author_terms').focus();
 });
 
 $('#run').click(function() {
@@ -117,6 +156,7 @@ $('#run').click(function() {
       journal_names: $('#journal_names').val(),
       text_terms: $('#text_terms').val(),
       mesh_terms: $('#mesh_terms').val(),
+      author_terms: $('#author_terms').val(),
       from_date: $('#from_date').val(),
       to_date: $('#to_date').val(),
       date_interval_in_years: $('#date_interval_in_years').val()
