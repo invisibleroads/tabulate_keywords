@@ -7,7 +7,7 @@ from os.path import basename, join
 from invisibleroads_macros.text import compact_whitespace
 from pandas import DataFrame
 from tempfile import mkdtemp
-
+from joblib import Parallel, delayed
 
 class ToolError(Exception):
     pass
@@ -23,16 +23,22 @@ def run(
      
     if author_names:
         array = np.zeros((len(author_names), 1))
-        for author_index, author_name in enumerate(author_names):
-            author_expression = get_expression(author_name=author_name, 
-                    from_date=from_date, to_date=to_date)
-            author_search_count = get_search_count(author_expression)
-            log_search_count(
-                    log_file, author_expression, author_search_count)
-             
-            array[ author_index, 0] = author_search_count
+        author_expressions = []
+        for name in author_names:
+            author_expressions.append(get_expression(author_name=name, 
+                    from_date=from_date, to_date=to_date))
         
-        table = DataFrame(array, index=[author_names], columns=['articles_count'])
+        author_search_counts = Parallel(n_jobs=2)(delayed(get_search_count)
+                (expression) for expression in author_expressions)
+            
+            
+        for index, count in enumerate(author_search_counts):
+            log_search_count(
+                    log_file, author_expressions[index], count)
+            array[ index, 0] = count
+        
+        table = DataFrame(array, index=[author_names], 
+                columns=['articles_count'])
         table_path = join(target_folder, 'search_counts.csv')
         table.to_csv(table_path)
         print('log_path = %s' % log_path)
@@ -51,37 +57,55 @@ def run(
             custom_expression=custom_expression)
         selected_search_count = 0
         total_search_count = 0
-
+        
         for date_range_index, (date_a, date_b) in enumerate(date_ranges):
+            journal_selected_expressions = []
+            journal_total_expressions = []
+
             for journal_index, journal_name in enumerate(journal_names):
-                # Get selected_search_count
-                journal_selected_expression = get_expression(
+                journal_selected_expressions.append(get_expression(
                     journal_name=journal_name, from_date=date_a, 
-                    to_date=date_b, custom_expression=partial_expression)
-                journal_selected_search_count = get_search_count(
-                    journal_selected_expression)
-                log_search_count(
-                    log_file, journal_selected_expression,
-                    journal_selected_search_count)
-                # Get total_search_count
-                journal_total_expression = get_expression(
+                    to_date=date_b, custom_expression=partial_expression))
+                journal_total_expressions.append(get_expression(
                     journal_name=journal_name, from_date=date_a, 
-                    to_date=date_b)
-                journal_total_search_count = get_search_count(
-                    journal_total_expression)
+                    to_date=date_b))
+            
+            
+            journal_selected_search_counts = Parallel(n_jobs=2)(
+                    delayed(get_search_count)(expression) for 
+                        expression in journal_selected_expressions)
+            journal_total_search_counts = Parallel(n_jobs=2)(
+                    delayed(get_search_count)(expression) for 
+                        expression in journal_total_expressions)
+
+               # Get selected_search_count
+
+            for index, selected_count in enumerate(
+                    journal_selected_search_counts):
                 log_search_count(
-                    log_file, journal_total_expression,
-                    journal_total_search_count)
+                    log_file, journal_selected_expressions[index], 
+                        selected_count)
+            
+               # Get total_search_count
+
+            for index, total_count in enumerate(
+                    journal_total_search_counts):
+                log_search_count(
+                    log_file, journal_total_expressions[index], 
+                        total_count)
                 # Save
                 try:
                     array[
-                        date_range_index, journal_index,
-                    ] = journal_selected_search_count / float(
-                        journal_total_search_count)
+                        date_range_index, index,
+                    ] = journal_selected_search_counts[index] / float(
+                        total_count)
                 except ZeroDivisionError:
                     pass
-                selected_search_count += journal_selected_search_count
-                total_search_count += journal_total_search_count
+            selected_search_count = reduce(lambda x, y: (x + y), 
+                    journal_selected_search_counts)
+            total_search_count = reduce(lambda x, y: (x + y), 
+                    journal_total_search_counts)
+            
         table = DataFrame(array, index=[
             date_a.year for date_a, date_b in date_ranges
         ], columns=[
