@@ -35,8 +35,11 @@ def run():
         to_date = parse_date(request.form.get('to_date'))
     except (TypeError, ValueError):
         from_date, to_date = None, None
-    date_interval_in_years = int(
-        request.form.get('date_interval_in_years'))
+    if request.form.get('date_interval_in_years') is not None:
+        date_interval_in_years = int(
+            request.form.get('date_interval_in_years'))
+    else:
+        date_interval_in_years = None
     result_properties = run_script(
         target_folder, journal_names, text_terms, mesh_terms,
         custom_expression, author_names, from_date, to_date, date_interval_in_years)

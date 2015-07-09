@@ -20,17 +20,17 @@ def run(
     log_path = join(target_folder, 'search_counts.log')
     log_file = open(log_path, 'wt')
 
-    date_ranges = get_date_ranges(from_date, to_date, date_interval_in_years)
-    
+     
     if author_names:
         array = np.zeros((len(author_names), 1))
         for author_index, author_name in enumerate(author_names):
-            author_expression = get_expression(author_name, from_date, to_date)
+            author_expression = get_expression(author_name=author_name, 
+                    from_date=from_date, to_date=to_date)
             author_search_count = get_search_count(author_expression)
             log_search_count(
                     log_file, author_expression, author_search_count)
              
-            array[ author_index, 1] = author_search_count
+            array[ author_index, 0] = author_search_count
         
         table = DataFrame(array, index=[author_names], columns=['articles_count'])
         table_path = join(target_folder, 'search_counts.csv')
@@ -39,9 +39,12 @@ def run(
         print('table_path = %s' % table_path)
         return dict()
 
-
+    
         
     else:
+        date_ranges = get_date_ranges(from_date, to_date, 
+                date_interval_in_years)
+
         array = np.zeros((len(date_ranges), len(journal_names)))
         partial_expression = get_expression(
             text_terms=text_terms, mesh_terms=mesh_terms,
@@ -53,8 +56,8 @@ def run(
             for journal_index, journal_name in enumerate(journal_names):
                 # Get selected_search_count
                 journal_selected_expression = get_expression(
-                    journal_name, from_date=date_a, to_date=date_b,
-                    custom_expression=partial_expression)
+                    journal_name=journal_name, from_date=date_a, 
+                    to_date=date_b, custom_expression=partial_expression)
                 journal_selected_search_count = get_search_count(
                     journal_selected_expression)
                 log_search_count(
@@ -62,7 +65,8 @@ def run(
                     journal_selected_search_count)
                 # Get total_search_count
                 journal_total_expression = get_expression(
-                    journal_name, from_date=date_a, to_date=date_b)
+                    journal_name=journal_name, from_date=date_a, 
+                    to_date=date_b)
                 journal_total_search_count = get_search_count(
                     journal_total_expression)
                 log_search_count(
