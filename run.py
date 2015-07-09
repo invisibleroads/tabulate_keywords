@@ -37,7 +37,7 @@ def run(
         table.to_csv(table_path)
         print('log_path = %s' % log_path)
         print('table_path = %s' % table_path)
-        return dict()
+        return dict(array=array, author_names=author_names)
 
     
         

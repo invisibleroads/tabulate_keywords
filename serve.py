@@ -62,7 +62,8 @@ def run():
             result_properties=result_properties)
     else:
         return render_template('author_response.html', 
-                archive_name=basename(archive_path))
+                archive_name=basename(archive_path),
+                result_properties=result_properties)
 
 @app.route('/download/<file_name>')
 def download(file_name):
