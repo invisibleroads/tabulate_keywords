@@ -46,17 +46,20 @@ def run():
         timestamp, security.make_random_string(16))
     archive_path = join(results_folder, archive_nickname + '.zip')
     disk.compress(target_folder, archive_path)
+    
+    if result_properties.has_key('image_name'):
+        source_image_path = join(target_folder, result_properties['image_name'])
+        target_image_path = join(results_folder, archive_nickname + '.png')
+        shutil.copy(source_image_path, target_image_path)
 
-    source_image_path = join(target_folder, result_properties['image_name'])
-    target_image_path = join(results_folder, archive_nickname + '.png')
-    shutil.copy(source_image_path, target_image_path)
-
-    return render_template(
-        'response.html',
-        archive_name=basename(archive_path),
-        image_name=basename(target_image_path),
-        result_properties=result_properties)
-
+        return render_template(
+            'response.html',
+            archive_name=basename(archive_path),
+            image_name=basename(target_image_path),
+            result_properties=result_properties)
+    else:
+        return render_template('author_response.html', 
+                archive_name=basename(archive_path))
 
 @app.route('/download/<file_name>')
 def download(file_name):

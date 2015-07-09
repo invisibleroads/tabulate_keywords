@@ -33,7 +33,7 @@
     </div>
   </div>
 
-<div id="guided_custom_query" style="margin-top: 0">
+<div id="journal_query" style="margin-top: 0">
   
 <div id=journal_names_question class='form-group'>
 <label for=journal_names class=control-label>Journals</label>
@@ -124,7 +124,7 @@ Weinberger AH
 <script>
 $('#query_method_guided').click(function() {
   $('#date_interval_question').removeClass('hidden').show();
-  $('#guided_custom_query').removeClass('hidden').show();
+  $('#journal_query').removeClass('hidden').show();
   $('#custom_query').hide();
   $('#author_query').hide();
   $('#guided_query').removeClass('hidden').show();
@@ -133,7 +133,7 @@ $('#query_method_guided').click(function() {
 
 $('#query_method_custom').click(function() {
   $('#date_interval_question').removeClass('hidden').show();
-  $('#guided_custom_query').removeClass('hidden').show();
+  $('#journal_query').removeClass('hidden').show();
   $('#guided_query').hide();
   $('#author_query').hide();
   $('#custom_query').removeClass('hidden').show();
@@ -142,7 +142,7 @@ $('#query_method_custom').click(function() {
 
 $('#query_method_author').click(function() {
   $('#date_interval_question').hide();
-  $('#guided_custom_query').hide();
+  $('#journal_query').hide();
   $('#guided_query').hide();
   $('#custom_query').hide();
   $('#author_query').removeClass('hidden').show();
@@ -171,6 +171,7 @@ $('#run').click(function() {
     });
 
     } else if($('#query_method_author').hasClass('active')) {
+
       $.post('/run', {
         author_names: $('#author_names').val(),
         from_date: $('#from_date').val(),
@@ -178,10 +179,7 @@ $('#run').click(function() {
       }, function(data) {
         $('#results').html(data);
         $('#run').prop('disabled', false);
-        $('#image').load(function() {
-          window.scrollTo(0, document.body.scrollHeight);
-        });
-      }); 
+        }); 
     
     } else {
 
