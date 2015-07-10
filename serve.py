@@ -42,7 +42,8 @@ def run():
         date_interval_in_years = None
     result_properties = run_script(
         target_folder, journal_names, text_terms, mesh_terms,
-        custom_expression, author_names, from_date, to_date, date_interval_in_years)
+        custom_expression, author_names, from_date,
+        to_date, date_interval_in_years)
 
     timestamp = datetime.datetime.now().strftime('%Y%m%d-%M%H')
     archive_nickname = '%s-%s' % (

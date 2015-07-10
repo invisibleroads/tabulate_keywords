@@ -44,10 +44,10 @@ def run(
         print('log_path = %s' % log_path)
         print('table_path = %s' % table_path)
         return dict(array=array, author_names=author_names)
-
     
-        
+
     else:
+
         date_ranges = get_date_ranges(from_date, to_date, 
                 date_interval_in_years)
 

@@ -24,17 +24,17 @@
 
 <form id=questions role=form>
 
-  <div id=query_method_question class='form-group'>
-    <div class="btn-group" data-toggle="buttons">
-      <label id="query_method_guided" class="btn btn-default active"><input type="radio"> Guided query</label>
-      <label id="query_method_custom" class="btn btn-default"><input type="radio"> Custom query</label>
-      <label id="query_method_author" class="btn btn-default"><input type="radio">Author query</label>
+<div id=query_method_question class='form-group'>
+  <div class="btn-group" data-toggle="buttons">
+  <label id="query_method_guided" class="btn btn-default active"><input type="radio"> Guided query</label>
+  <label id="query_method_custom" class="btn btn-default"><input type="radio"> Custom query</label>
+  <label id="query_method_author" class="btn btn-default"><input type="radio">Author query</label>
 
-    </div>
-  </div>
+</div>
+</div>
 
 <div id="journal_query" style="margin-top: 0">
-  
+
 <div id=journal_names_question class='form-group'>
 <label for=journal_names class=control-label>Journals</label>
 <textarea id=journal_names class=form-control rows=3>
@@ -59,7 +59,7 @@ poverty
 <label for=mesh_terms class=control-label>
 <a href="http://www.ncbi.nlm.nih.gov/mesh" target="_blank">MeSH terms</a>
 </label>
-<textarea id=mesh_terms class=form-control rows=3>
+<textarea id='mesh_terms' class=form-control rows=3>
 social class
 socioeconomic factors
 </textarea>
@@ -83,9 +83,9 @@ socioeconomic factors
 
 <div id="author_query" class="hidden" style="margin-top: 0">
 
-<div id=author_question class='form-group'>
+<div id='author_question' class='form-group'>
 <label for=author_names class=control-label>Authors</label>
-<textarea id=author_names class=form-control rows=3>
+<textarea id='author_names' class=form-control rows=3>
 Weinberger AH
 </textarea>
 </div>
@@ -98,9 +98,13 @@ Weinberger AH
 <input class="form-control" type="text" data-provide="datepicker" value="12/31/2010" id="to_date" />
 </div>
 
+<div id="date_interval" style="margin-top: 0">
+
 <div id=date_interval_question class='form-group'>
 <label for=date_interval_in_years class=control-label>Date interval in years</label>
 <input class="form-control" id=date_interval_in_years value=2>
+</div>
+
 </div>
 </form>
 
@@ -112,18 +116,22 @@ Weinberger AH
 
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
 <script src="//eternicode.github.io/bootstrap-datepicker/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+
 <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
-<script>
-  $(function(){
+
+
+<!-- <script type='text/javascript'>
+$(window).load(function(){
 // turn the element to select2 select style
-    $(#select2').select2();
-  });
-</script>
+    $('#select2').select2();
+    });
+  </script>-->
 
 <script>
 $('#query_method_guided').click(function() {
-  $('#date_interval_question').removeClass('hidden').show();
+  $('#date_interval').removeClass('hidden').show();
   $('#journal_query').removeClass('hidden').show();
   $('#custom_query').hide();
   $('#author_query').hide();
@@ -132,7 +140,7 @@ $('#query_method_guided').click(function() {
 });
 
 $('#query_method_custom').click(function() {
-  $('#date_interval_question').removeClass('hidden').show();
+  $('#date_interval').removeClass('hidden').show();
   $('#journal_query').removeClass('hidden').show();
   $('#guided_query').hide();
   $('#author_query').hide();
@@ -141,7 +149,7 @@ $('#query_method_custom').click(function() {
 });
 
 $('#query_method_author').click(function() {
-  $('#date_interval_question').hide();
+  $('#date_interval').hide();
   $('#journal_query').hide();
   $('#guided_query').hide();
   $('#custom_query').hide();
