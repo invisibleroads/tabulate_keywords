@@ -28,8 +28,9 @@ def run(
             author_expressions.append(get_expression(author_name=name, 
                     from_date=from_date, to_date=to_date))
         
-        author_search_counts = Parallel(n_jobs=2)(delayed(get_search_count)
-                (expression) for expression in author_expressions)
+        author_search_counts = Parallel(n_jobs=2, backend='threading')(
+                delayed(get_search_count)(expression) for 
+                expression in author_expressions)
             
             
         for index, count in enumerate(author_search_counts):
@@ -71,10 +72,10 @@ def run(
                     to_date=date_b))
             
             
-            journal_selected_search_counts = Parallel(n_jobs=2)(
+            journal_selected_search_counts = Parallel(n_jobs=2, backend='threading')(
                     delayed(get_search_count)(expression) for 
                         expression in journal_selected_expressions)
-            journal_total_search_counts = Parallel(n_jobs=2)(
+            journal_total_search_counts = Parallel(n_jobs=2, backend='threading')(
                     delayed(get_search_count)(expression) for 
                         expression in journal_total_expressions)
 
