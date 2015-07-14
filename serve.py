@@ -51,7 +51,7 @@ def run():
     archive_path = join(results_folder, archive_nickname + '.zip')
     disk.compress(target_folder, archive_path)
     
-    if result_properties.has_key('image_name'):
+    if 'image_name' in result_properties:
         source_image_path = join(target_folder, result_properties['image_name'])
         target_image_path = join(results_folder, archive_nickname + '.png')
         shutil.copy(source_image_path, target_image_path)
