@@ -1,24 +1,12 @@
 <form action="/download/{{ archive_name }}">
 <input type="submit" value="Download" class="btn btn-success" download>
 </form>
-Query Complete.. Download Results
 
-<p>Results:</p>
-
-<div style="width:200px; float:left" id='results_authors'>
-  <p>Authors</p>  
-<ul>
-{% for name in  result_properties['author_names'] %}
-<li>{{name}}  </li>
+<table class="table table-striped">
+{% for name, count in name_count_packs %}
+<tr>
+  <td>{{ name }}</td>
+  <td>{{ count }}</td>
+</tr>
 {% endfor %}
-</ul>
-</div>
-
-<div style="width:200px; float:right" id='results_count'>
-  <p>Count</p>
-  <ul>
-{% for count in  result_properties['array'] %}
-<li>{{count}}  </li>
-{% endfor %}
-</ul>
-</div>
+</table>

@@ -50,9 +50,10 @@ def run():
         timestamp, security.make_random_string(16))
     archive_path = join(results_folder, archive_nickname + '.zip')
     disk.compress(target_folder, archive_path)
-    
-    if result_properties.has_key('image_name'):
-        source_image_path = join(target_folder, result_properties['image_name'])
+
+    if 'image_name' in result_properties:
+        source_image_path = join(
+            target_folder, result_properties['image_name'])
         target_image_path = join(results_folder, archive_nickname + '.png')
         shutil.copy(source_image_path, target_image_path)
 
@@ -62,9 +63,13 @@ def run():
             image_name=basename(target_image_path),
             result_properties=result_properties)
     else:
-        return render_template('author_response.html', 
-                archive_name=basename(archive_path),
-                result_properties=result_properties)
+        return render_template(
+            'author_response.html',
+            archive_name=basename(archive_path),
+            name_count_packs=zip(
+                result_properties['author_names'],
+                result_properties['article_counts']))
+
 
 @app.route('/download/<file_name>')
 def download(file_name):
@@ -73,4 +78,4 @@ def download(file_name):
 
 
 if __name__ == '__main__':
-    app.run( port=27973)
+    app.run(host='0.0.0.0', port=27973)

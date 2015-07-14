@@ -9,6 +9,7 @@ from pandas import DataFrame
 from tempfile import mkdtemp
 from joblib import Parallel, delayed
 
+
 class ToolError(Exception):
     pass
 
@@ -20,80 +21,74 @@ def run(
     log_path = join(target_folder, 'search_counts.log')
     log_file = open(log_path, 'wt')
 
-     
     if author_names:
-        array = np.zeros((len(author_names), 1))
+        article_counts = []
         author_expressions = []
         for name in author_names:
-            author_expressions.append(get_expression(author_name=name, 
-                    from_date=from_date, to_date=to_date))
-        
+            author_expressions.append(get_expression(
+                author_name=name, from_date=from_date, to_date=to_date))
+
         author_search_counts = Parallel(n_jobs=2, backend='threading')(
-                delayed(get_search_count)(expression) for 
-                expression in author_expressions)
-            
-            
+            delayed(get_search_count)(expression) for
+            expression in author_expressions)
+
         for index, count in enumerate(author_search_counts):
-            log_search_count(
-                    log_file, author_expressions[index], count)
-            array[ index, 0] = count
-        
-        table = DataFrame(array, index=[author_names], 
-                columns=['articles_count'])
+            log_search_count(log_file, author_expressions[index], count)
+            article_counts.append(count)
+
+        table = DataFrame(
+            article_counts, index=[author_names], columns=['article_count'])
         table_path = join(target_folder, 'search_counts.csv')
         table.to_csv(table_path)
         print('log_path = %s' % log_path)
         print('table_path = %s' % table_path)
-        return dict(array=array, author_names=author_names)
-    
-
+        return dict(article_counts=article_counts, author_names=author_names)
     else:
-
-        date_ranges = get_date_ranges(from_date, to_date, 
-                date_interval_in_years)
-
+        date_ranges = get_date_ranges(
+            from_date, to_date, date_interval_in_years)
         array = np.zeros((len(date_ranges), len(journal_names)))
         partial_expression = get_expression(
             text_terms=text_terms, mesh_terms=mesh_terms,
             custom_expression=custom_expression)
         selected_search_count = 0
         total_search_count = 0
-        
+
         for date_range_index, (date_a, date_b) in enumerate(date_ranges):
             journal_selected_expressions = []
             journal_total_expressions = []
 
             for journal_index, journal_name in enumerate(journal_names):
                 journal_selected_expressions.append(get_expression(
-                    journal_name=journal_name, from_date=date_a, 
+                    journal_name=journal_name, from_date=date_a,
                     to_date=date_b, custom_expression=partial_expression))
                 journal_total_expressions.append(get_expression(
-                    journal_name=journal_name, from_date=date_a, 
+                    journal_name=journal_name, from_date=date_a,
                     to_date=date_b))
-            
-            
-            journal_selected_search_counts = Parallel(n_jobs=2, backend='threading')(
-                    delayed(get_search_count)(expression) for 
-                        expression in journal_selected_expressions)
-            journal_total_search_counts = Parallel(n_jobs=2, backend='threading')(
-                    delayed(get_search_count)(expression) for 
-                        expression in journal_total_expressions)
 
-               # Get selected_search_count
+            journal_selected_search_counts = Parallel(
+                n_jobs=2, backend='threading')(
+                    delayed(get_search_count)(expression) for
+                    expression in journal_selected_expressions)
+            journal_total_search_counts = Parallel(
+                n_jobs=2, backend='threading')(
+                    delayed(get_search_count)(expression) for
+                    expression in journal_total_expressions)
+
+            # Get selected_search_count
 
             for index, selected_count in enumerate(
                     journal_selected_search_counts):
                 log_search_count(
-                    log_file, journal_selected_expressions[index], 
-                        selected_count)
-            
-               # Get total_search_count
+                    log_file, journal_selected_expressions[index],
+                    selected_count)
+
+            # Get total_search_count
 
             for index, total_count in enumerate(
                     journal_total_search_counts):
                 log_search_count(
-                    log_file, journal_total_expressions[index], 
-                        total_count)
+                    log_file, journal_total_expressions[index],
+                    total_count)
                 # Save
                 try:
                     array[
@@ -102,11 +97,11 @@ def run(
                         total_count)
                 except ZeroDivisionError:
                     pass
-            selected_search_count = reduce(lambda x, y: (x + y), 
-                    journal_selected_search_counts)
-            total_search_count = reduce(lambda x, y: (x + y), 
-                    journal_total_search_counts)
-            
+            selected_search_count = reduce(
+                lambda x, y: (x + y), journal_selected_search_counts)
+            total_search_count = reduce(
+                lambda x, y: (x + y), journal_total_search_counts)
+
         table = DataFrame(array, index=[
             date_a.year for date_a, date_b in date_ranges
         ], columns=[
@@ -133,7 +128,8 @@ def run(
 
 def get_expression(
         journal_name=None, text_terms=None, mesh_terms=None,
-        from_date=None, to_date=None, custom_expression=None, author_name=None):
+        from_date=None, to_date=None, custom_expression=None,
+        author_name=None):
     expression_parts = []
     if journal_name:
         expression_parts.append('"%s"[Journal]' % journal_name)
@@ -236,6 +232,7 @@ if __name__ == '__main__':
     result_properties = run(
         target_folder,
         args.journal_names, args.text_terms, args.mesh_terms,
-        args.custom_expression, args.author_names, args.from_date, args.to_date,
+        args.custom_expression, args.author_names,
+        args.from_date, args.to_date,
         args.date_interval_in_years)
     print(result_properties)
