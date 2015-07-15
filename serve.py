@@ -1,7 +1,9 @@
 import datetime
 import shutil
 from flask import Flask, render_template, request, send_from_directory
-from invisibleroads_macros import disk, security
+from invisibleroads_macros.disk import compress, make_folder
+from invisibleroads_macros.security import make_random_string
+from invisibleroads_macros.text import remove_punctuation
 from os.path import basename, join
 from tempfile import mkdtemp
 
@@ -10,7 +12,7 @@ from run import run as run_script
 
 
 app = Flask(__name__)
-results_folder = disk.make_folder('results')
+results_folder = make_folder('results')
 
 
 @app.route('/')
@@ -21,14 +23,10 @@ def index():
 @app.route('/run', methods=['GET', 'POST'])
 def run():
     target_folder = mkdtemp()
-    journal_names = sorted(set(
-        request.form.get('journal_names', '').splitlines()))
-    author_names = sorted(set(
-        request.form.get('author_names', '').splitlines()))
-    text_terms = sorted(set(
-        request.form.get('text_terms', '').splitlines()))
-    mesh_terms = sorted(set(
-        request.form.get('mesh_terms', '').splitlines()))
+    journal_names = load_terms(request.form.get('journal_names', ''))
+    author_names = load_terms(request.form.get('author_names', ''))
+    text_terms = load_terms(request.form.get('text_terms', ''))
+    mesh_terms = load_terms(request.form.get('mesh_terms', ''))
     custom_expression = request.form.get('custom_expression', '')
     try:
         from_date = parse_date(request.form.get('from_date'))
@@ -46,10 +44,9 @@ def run():
         to_date, date_interval_in_years)
 
     timestamp = datetime.datetime.now().strftime('%Y%m%d-%M%H')
-    archive_nickname = '%s-%s' % (
-        timestamp, security.make_random_string(16))
+    archive_nickname = '%s-%s' % (timestamp, make_random_string(16))
     archive_path = join(results_folder, archive_nickname + '.zip')
-    disk.compress(target_folder, archive_path)
+    compress(target_folder, archive_path)
 
     if 'image_name' in result_properties:
         source_image_path = join(
@@ -75,6 +72,11 @@ def run():
 def download(file_name):
     file_path = join(results_folder, basename(file_name))
     return send_from_directory('.', filename=file_path)
+
+
+def load_terms(text):
+    return sorted(set(
+        remove_punctuation(x).title() for x in text.splitlines()))
 
 
 if __name__ == '__main__':

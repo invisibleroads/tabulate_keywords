@@ -4,7 +4,7 @@ import requests
 from argparse import ArgumentParser
 from bs4 import BeautifulSoup
 from os.path import basename, join
-from invisibleroads_macros.text import compact_whitespace
+from invisibleroads_macros.text import compact_whitespace, remove_punctuation
 from pandas import DataFrame
 from tempfile import mkdtemp
 from joblib import Parallel, delayed
@@ -29,20 +29,23 @@ def run(
                 author_name=name, from_date=from_date, to_date=to_date))
 
         author_search_counts = Parallel(n_jobs=2, backend='threading')(
-            delayed(get_search_count)(expression) for
+            delayed(get_search_count)(expression) for 
             expression in author_expressions)
-
+            
+            
         for index, count in enumerate(author_search_counts):
             log_search_count(log_file, author_expressions[index], count)
             article_counts.append(count)
 
         table = DataFrame(
-            article_counts, index=[author_names], columns=['article_count'])
+            article_counts, index=[author_names], columns=['articles_count'])
         table_path = join(target_folder, 'search_counts.csv')
         table.to_csv(table_path)
         print('log_path = %s' % log_path)
         print('table_path = %s' % table_path)
         return dict(article_counts=article_counts, author_names=author_names)
+    
+
     else:
         date_ranges = get_date_ranges(
             from_date, to_date, date_interval_in_years)
@@ -64,15 +67,15 @@ def run(
                 journal_total_expressions.append(get_expression(
                     journal_name=journal_name, from_date=date_a,
                     to_date=date_b))
-
             journal_selected_search_counts = Parallel(
                 n_jobs=2, backend='threading')(
-                    delayed(get_search_count)(expression) for
+                    delayed(get_search_count)(expression) for 
                     expression in journal_selected_expressions)
             journal_total_search_counts = Parallel(
                 n_jobs=2, backend='threading')(
-                    delayed(get_search_count)(expression) for
+                    delayed(get_search_count)(expression) for 
                     expression in journal_total_expressions)
+
 
             # Get selected_search_count
 
@@ -82,12 +85,13 @@ def run(
                     log_file, journal_selected_expressions[index],
                     selected_count)
 
+
             # Get total_search_count
 
             for index, total_count in enumerate(
                     journal_total_search_counts):
                 log_search_count(
-                    log_file, journal_total_expressions[index],
+                    log_file, journal_total_expressions[index], 
                     total_count)
                 # Save
                 try:
@@ -101,7 +105,7 @@ def run(
                 lambda x, y: (x + y), journal_selected_search_counts)
             total_search_count = reduce(
                 lambda x, y: (x + y), journal_total_search_counts)
-
+            
         table = DataFrame(array, index=[
             date_a.year for date_a, date_b in date_ranges
         ], columns=[
@@ -141,7 +145,7 @@ def get_expression(
     if custom_expression:
         expression_parts.append(custom_expression)
     if author_name:
-        expression_parts.append('"%s"[Author]' % author_name)
+        expression_parts.append('%s[Author]' % author_name)
     if from_date:
         from_date_string = from_date.strftime(
             '%Y/%m/%d')
@@ -189,7 +193,8 @@ def log_search_count(log_file, expression, search_count):
 
 def load_unique_lines(source_path):
     source_text = open(source_path, 'rt').read().strip()
-    return sorted(set([x.strip() for x in source_text.splitlines()]))
+    return sorted(set(
+        remove_punctuation(x).title() for x in source_text.splitlines()))
 
 
 def parse_date(string):
